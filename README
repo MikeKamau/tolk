@@ -1,0 +1,23 @@
+PREREQUISITES
+=============
+To use this script make sure you have tor installed and running, and that you also have the pysocks module intalled.
+This can be accomplished using the following commands.
+
+#Install tor, start it and check to make sure that its running
+apt-get update
+apt-get install tor
+systemctl start tor.service
+systemctl status tor.service
+
+#Install the pysocks module
+pip insall pysocks
+
+PURPOSE OF SCRIPT
+=================
+This script is for stress testing websites against DOS attacks using the tor network, and of course is for educational porpuses only.
+
+
+CREDIT
+===============
+As this script is a mash up of the work of Barry Shteiman (http://www.sectorix.com) and Marian (http://www.sendung.de), all credit goes to them.
+
