@@ -14,7 +14,7 @@ pip insall pysocks
 
 PURPOSE OF SCRIPT
 =================
-This script is for stress testing websites against DOS attacks using the tor network, and of course is for educational porpuses only.
+This script is for stress testing websites against DOS attacks using the tor network, and of course is to be used for educational porpuses only.
 
 
 CREDIT
