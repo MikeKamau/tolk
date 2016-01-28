@@ -7,7 +7,7 @@
 #
 # author :  Barry Shteiman, MikeKamau, Maxim Muzafarov, Pr0xy671 , Version 2.1
 # ----------------------------------------------------------------------------------------------
-import sys, requests, socks, socket; from threading import Thread; from requests.exceptions import HTTPError, ConnectionError
+import sys, requests, socks, socket, threading;from requests.exceptions import HTTPError, ConnectionError
 from random import randint, choice; from re import search; from string import ascii_lowercase as alphabet
 
 #The following two lines connect to the local SOCKS5 proxy that's started on port 9050 when tor
@@ -102,7 +102,7 @@ def httpcall(url):
                 		'Cache-Control': 'no-cache',
                 		'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
                 		'Referer': choice(referers) + buildblock(),
-                		'Keep-Alive': randint(110, 120)}
+                		'Keep-Alive': randint(110, 120)})
 	except HTTPError as e:
 			#print e.code
 			set_flag(1)
@@ -121,7 +121,8 @@ def httpcall(url):
                 		'Cache-Control': 'no-cache',
                 		'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
                 		'Referer': choice(referers) + buildblock(),
-                		'Keep-Alive': randint(110, 120)}
+                		'Keep-Alive': randint(110, 120)})
+                		
 	return(code)		
 
 #http caller thread 
